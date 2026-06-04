@@ -11,7 +11,7 @@ collection
 from
 "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const PASSWORD = "CHANGE_ME";
+const PASSWORD = "aeroshots is best";
 
 const urlInput =
 document.getElementById("url");
