@@ -1,19 +1,41 @@
 <!DOCTYPE html>
-<html><head>
-<meta charset="utf-8">
+<html>
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Aeroshots Shortener</title>
+<title>ShortLink</title>
+
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-<div id="splash"><h1>AEROSHOTS</h1></div>
-<button id="adminBtn">Delete All</button>
-<div class="card">
-<h2>Link Shortener</h2>
-<input id="url" placeholder="Paste long URL">
-<button id="createBtn">Create Short Link</button>
-<div id="status"></div>
+
+<div class="container">
+
+<h1>🔗 ShortLink</h1>
+
+<input id="longUrl"
+placeholder="Paste your long URL">
+
+<input id="customCode"
+placeholder="Custom code (optional)">
+
+<button onclick="createLink()">
+Create Link
+</button>
+
 <div id="result"></div>
+
+<hr>
+
+<button class="adminBtn"
+onclick="openAdmin()">
+Admin
+</button>
+
 </div>
+
 <script type="module" src="app.js"></script>
-</body></html>
+
+</body>
+</html>

@@ -1,69 +1,80 @@
+import { db } from "./firebase-config.js";
 
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getFirestore,doc,setDoc,getDoc,getDocs,deleteDoc,collection } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-import { firebaseConfig } from './firebase-config.js';
+import {
+collection,
+addDoc,
+getDocs,
+deleteDoc,
+doc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const CREATE_PASSWORD='create123';
-const ADMIN_PASSWORD='admin123';
+const ADMIN_CODE =
+"CRAFTXFF2026";
 
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
+window.createLink = async () => {
 
-function randomCode(){
- const chars='ABCDEFGHJKLMNPQRSTUVWXYZ123456789';
- let s='';
- for(let i=0;i<5;i++) s+=chars[Math.floor(Math.random()*chars.length)];
- return s;
+const url =
+document.getElementById("longUrl").value;
+
+if(!url){
+alert("Enter URL");
+return;
 }
 
-async function getUnique(){
- let id;
- do{id=randomCode();}
- while((await getDoc(doc(db,'links',id))).exists());
- return id;
+const pass =
+prompt("Enter password");
+
+if(pass !== "1234"){
+alert("Wrong Password");
+return;
 }
 
-async function cleanup(){
- const snap=await getDocs(collection(db,'links'));
- const now=Date.now();
- for(const d of snap.docs){
-  const data=d.data();
-  if(data.expireAt && now>data.expireAt){
-   await deleteDoc(doc(db,'links',d.id));
-  }
- }
-}
-cleanup();
+let code =
+document.getElementById("customCode").value;
 
-createBtn.onclick=async()=>{
- const url=document.getElementById('url').value.trim();
- if(!url) return alert('Enter URL');
- if(prompt('Creator Password')!==CREATE_PASSWORD) return;
- status.textContent='Creating...';
- const id=await getUnique();
- await setDoc(doc(db,'links',id),{
-   url:url,
-   createdAt:Date.now(),
-   expireAt:Date.now()+30*24*60*60*1000
- });
- const shortUrl=location.origin+'/?go='+id;
- result.innerHTML=`<b>${shortUrl}</b><br><button id="copyBtn">Copy Link</button>`;
- document.getElementById('copyBtn').onclick=()=>navigator.clipboard.writeText(shortUrl);
- status.textContent='Done';
+if(!code){
+code =
+Math.random()
+.toString(36)
+.substring(2,8);
+}
+
+await addDoc(
+collection(db,"links"),
+{
+url,
+code,
+clicks:0,
+createdAt:Date.now()
+}
+);
+
+document.getElementById("result")
+.innerHTML =
+`https://yourdomain.com/${code}`;
 };
 
-adminBtn.onclick=async()=>{
- if(prompt('Admin Password')!==ADMIN_PASSWORD) return;
- const snap=await getDocs(collection(db,'links'));
- for(const d of snap.docs){
-   await deleteDoc(doc(db,'links',d.id));
- }
- alert('All links deleted');
-};
+window.openAdmin = async () => {
 
-const code=new URLSearchParams(location.search).get('go');
-if(code){
- const ref=await getDoc(doc(db,'links',code));
- if(ref.exists()) location.href=ref.data().url;
- document.body.innerHTML='<h2 style="color:white">Link not found or expired</h2>';
+const code =
+prompt("Admin Secret");
+
+if(code !== ADMIN_CODE){
+alert("Invalid");
+return;
 }
+
+const snap =
+await getDocs(
+collection(db,"links")
+);
+
+for(const d of snap.docs){
+await deleteDoc(
+doc(db,"links",d.id)
+);
+}
+
+alert("All Links Deleted");
+};
