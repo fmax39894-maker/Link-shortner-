@@ -1,10 +1,10 @@
 
 export const firebaseConfig = {
-  apiKey: "AIzaSyDn9YUbhmjtjMWfMhZwm-t0h4hpRoIWb7o",
-  authDomain: "shortner-b4523.firebaseapp.com",
-  projectId: "shortner-b4523",
-  storageBucket: "shortner-b4523.firebasestorage.app",
-  messagingSenderId: "372535207637",
-  appId: "1:372535207637:web:46510f9a25109c7164645c",
-  measurementId: "G-NWV03CS91H"
+  apiKey: "AIzaSyDmwP2JO7r03EhYBFYjxeDhVsW95RksVmk",
+  authDomain: "shortner-ad4c6.firebaseapp.com",
+  projectId: "shortner-ad4c6",
+  storageBucket: "shortner-ad4c6.firebasestorage.app",
+  messagingSenderId: "155714841542",
+  appId: "1:155714841542:web:d4a0a9f2fd0a26c47360c7",
+  measurementId: "G-44WCFE3VT2"
 };
