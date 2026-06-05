@@ -1,80 +1,82 @@
 import { db } from "./firebase-config.js";
 
 import {
-collection,
-addDoc,
-getDocs,
-deleteDoc,
-doc
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  increment,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const ADMIN_CODE =
-"CRAFTXFF2026";
+// Redirect logic
+const code = window.location.pathname.slice(1);
 
-window.createLink = async () => {
-
-const url =
-document.getElementById("longUrl").value;
-
-if(!url){
-alert("Enter URL");
-return;
+if (code && code !== "index.html") {
+  redirectLink(code);
 }
 
-const pass =
-prompt("Enter password");
+async function redirectLink(code) {
 
-if(pass !== "1234"){
-alert("Wrong Password");
-return;
+  const q = query(
+    collection(db, "links"),
+    where("code", "==", code)
+  );
+
+  const snap = await getDocs(q);
+
+  if (snap.empty) {
+    document.body.innerHTML =
+      "<h2>Link not found</h2>";
+    return;
+  }
+
+  const docRef = snap.docs[0];
+
+  await updateDoc(docRef.ref, {
+    clicks: increment(1)
+  });
+
+  const data = docRef.data();
+
+  window.location.href = data.url;
 }
 
-let code =
-document.getElementById("customCode").value;
+window.createLink = async function () {
 
-if(!code){
-code =
-Math.random()
-.toString(36)
-.substring(2,8);
-}
+  const longUrl =
+    document.getElementById("longUrl").value.trim();
 
-await addDoc(
-collection(db,"links"),
-{
-url,
-code,
-clicks:0,
-createdAt:Date.now()
-}
-);
+  if (!longUrl) {
+    alert("Enter URL");
+    return;
+  }
 
-document.getElementById("result")
-.innerHTML =
-`https://yourdomain.com/${code}`;
-};
+  let code =
+    Math.random()
+      .toString(36)
+      .substring(2, 8);
 
-window.openAdmin = async () => {
+  await addDoc(
+    collection(db, "links"),
+    {
+      code,
+      url: longUrl,
+      clicks: 0,
+      createdAt: Date.now()
+    }
+  );
 
-const code =
-prompt("Admin Secret");
+  const shortLink =
+    `${window.location.origin}/${code}`;
 
-if(code !== ADMIN_CODE){
-alert("Invalid");
-return;
-}
-
-const snap =
-await getDocs(
-collection(db,"links")
-);
-
-for(const d of snap.docs){
-await deleteDoc(
-doc(db,"links",d.id)
-);
-}
-
-alert("All Links Deleted");
+  document.getElementById("result").innerHTML =
+    `
+    <input
+      value="${shortLink}"
+      readonly
+      style="width:100%;padding:10px"
+    >
+    `;
 };
